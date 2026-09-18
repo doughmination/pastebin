@@ -1,0 +1,654 @@
+/* public/static/style.css
+ * Copyright (c) 2026 Clove Nytrix Doughmination Twilight
+ * Licensed under the DASL-1.2 Licence.
+ * See LICENCE.md in the project root for full licence information.
+ */
+
+/* The palette is the auth server's, so signing in and coming back doesn't feel
+ * like leaving the site. A paste may override --accent and the tints derived
+ * from it on <body>; everything below reads through those variables so one
+ * colour re-themes a page. */
+:root {
+  --bg: #07050a;
+  --surface: #100a10;
+  --surface-2: #1a1016;
+  --border: #34141c;
+  --border-strong: #5c1c28;
+  --text: #ece3e6;
+  --muted: #9c848c;
+  --accent: #9c1f34;
+  --accent-strong: #c22a44;
+  --accent-text: #fff2f2;
+  --ok: #5f9e78;
+  --ok-bg: rgba(95, 158, 120, 0.12);
+  --danger: #ff4d5e;
+  --danger-bg: rgba(255, 77, 94, 0.12);
+  --focus: #e23a52;
+  --focus-glow: rgba(226, 58, 82, 0.35);
+  --accent-wash: rgba(156, 31, 52, 0.16);
+  --accent-wash-soft: rgba(92, 28, 40, 0.12);
+  --radius: 8px;
+  --display-font: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --mono-font: ui-monospace, "Cascadia Code", Menlo, monospace;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 900px 480px at 50% -12%, var(--accent-wash), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 110%, var(--accent-wash-soft), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  cursor: url("https://m.doughmination.gay/cursors/sandrone/Normal.png") 0 0, default;
+}
+
+a,
+button,
+.btn,
+select,
+summary,
+label[for],
+.swatch {
+  cursor: url("https://m.doughmination.gay/cursors/sandrone/Link.png") 4 0, pointer;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+textarea {
+  cursor: url("https://m.doughmination.gay/cursors/sandrone/Text.png") 4 9, text;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+[aria-disabled="true"] {
+  cursor: url("https://m.doughmination.gay/cursors/sandrone/Unavailable.png") 0 0, not-allowed;
+}
+
+a {
+  color: var(--accent-strong);
+}
+
+a:hover {
+  color: var(--focus);
+}
+
+code {
+  font-family: var(--mono-font);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  font-family: var(--display-font);
+  font-size: 1.6rem;
+  letter-spacing: 0.015em;
+  margin: 0 0 0.75rem;
+}
+
+h2 {
+  font-family: var(--display-font);
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.5rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.875rem;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- layout ------------------------------------------------------------------ */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 16px;
+  background: linear-gradient(180deg, var(--surface), #0b070a);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 var(--accent-wash);
+}
+
+.brand {
+  color: var(--text);
+  font-family: var(--display-font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.topbar nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+main {
+  margin: 0 auto;
+  padding: 1.5rem 16px 3rem;
+}
+
+main.wide {
+  max-width: 960px;
+}
+
+main.narrow {
+  max-width: 440px;
+  padding-top: 3rem;
+}
+
+main.full {
+  max-width: 1400px;
+}
+
+.card,
+.panel {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: 0 16px 32px -20px rgba(0, 0, 0, 0.8);
+}
+
+.panel {
+  margin: 1rem 0;
+}
+
+/* --- forms ------------------------------------------------------------------- */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field > span,
+.field > legend {
+  font-weight: 550;
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+  font-family: var(--mono-font);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+input:disabled,
+input[readonly] {
+  opacity: 0.7;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--focus-glow);
+  border-radius: 4px;
+}
+
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin: 0;
+}
+
+legend {
+  padding: 0 0.3rem;
+}
+
+.check,
+.field-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-direction: row;
+}
+
+.check input {
+  margin-top: 0.3rem;
+}
+
+button,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-weight: 550;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+button:hover:not(:disabled),
+.btn:hover:not([aria-disabled="true"]) {
+  border-color: var(--accent-strong);
+  color: var(--text);
+}
+
+button:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.55;
+}
+
+button.primary,
+.btn.primary {
+  background: linear-gradient(180deg, var(--accent-strong), var(--accent) 85%);
+  border-color: var(--border-strong);
+  color: var(--accent-text);
+}
+
+button.primary:hover:not(:disabled),
+.btn.primary:hover {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px var(--focus-glow);
+  color: var(--accent-text);
+}
+
+button.danger,
+.btn.danger {
+  color: var(--danger);
+}
+
+button.danger:hover:not(:disabled) {
+  border-color: var(--danger);
+}
+
+button.small,
+.btn.small {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.85rem;
+}
+
+form.inline {
+  display: inline;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* --- accent swatches ----------------------------------------------------------- */
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.swatch:hover {
+  border-color: var(--accent-strong);
+  color: var(--text);
+}
+
+/* The radio itself is the accessible control; the dot is what you see. */
+.swatch input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.swatch:has(input:checked) {
+  border-color: var(--focus);
+  color: var(--text);
+  box-shadow: 0 0 0 2px var(--focus-glow);
+}
+
+.swatch:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.swatch-dot {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: var(--swatch, transparent);
+  flex-shrink: 0;
+}
+
+.swatch-none .swatch-dot {
+  background:
+    linear-gradient(135deg, transparent 46%, var(--muted) 46%, var(--muted) 54%, transparent 54%),
+    #1a1016;
+}
+
+.swatch-crimson { --swatch: #9c1f34; }
+.swatch-rose { --swatch: #c2456b; }
+.swatch-violet { --swatch: #7b4bc4; }
+.swatch-indigo { --swatch: #4257b2; }
+.swatch-teal { --swatch: #1f8a7a; }
+.swatch-moss { --swatch: #4f8a3d; }
+.swatch-amber { --swatch: #b07d1e; }
+.swatch-ember { --swatch: #c2562a; }
+
+.swatch-custom input[type="color"] {
+  width: 1.6rem;
+  height: 1.3rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: none;
+}
+
+/* --- notices, badges, rows ------------------------------------------------------ */
+
+.notice {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  margin: 0.75rem 0;
+}
+
+.notice.ok {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.notice.error {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.badge.danger {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.rows {
+  list-style: none;
+  margin: 0.5rem 0 0.75rem;
+  padding: 0;
+}
+
+.rows > li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.rows > li:last-child {
+  border-bottom: 0;
+}
+
+.paste-link {
+  font-family: var(--display-font);
+  font-size: 1.05rem;
+  text-decoration: none;
+}
+
+.paste-link:hover {
+  text-decoration: underline;
+}
+
+.paste-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* --- a paste -------------------------------------------------------------------- */
+
+.paste {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.paste-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.paste-head h1 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.paste-actions {
+  flex-shrink: 0;
+}
+
+.jpml-note {
+  margin: 0;
+}
+
+/* The code surface takes its background from the chosen highlight theme (Shiki
+ * puts it on the <pre>), and the frame around it from the page accent. */
+.code {
+  position: relative;
+  border: 1px solid var(--border);
+  border-top: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 16px 32px -20px rgba(0, 0, 0, 0.8);
+}
+
+.code pre.shiki {
+  margin: 0;
+  padding: 1rem 0;
+  overflow-x: auto;
+  font-family: var(--mono-font);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  tab-size: 2;
+}
+
+.code pre.sh-plain {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.code pre.shiki code {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  font-size: inherit;
+  counter-reset: line;
+}
+
+.code .line {
+  display: inline-block;
+  width: 100%;
+  padding: 0 1rem;
+  scroll-margin-top: 4rem;
+}
+
+/* Line numbers are a counter rather than markup, so selecting the code and
+ * copying it never picks them up. */
+.code.numbered pre.shiki code {
+  counter-reset: line;
+}
+
+.code.numbered .line {
+  padding-left: 4.2rem;
+}
+
+.code.numbered .line::before {
+  counter-increment: line;
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: 3.4rem;
+  padding-right: 0.8rem;
+  text-align: right;
+  color: var(--muted);
+  opacity: 0.55;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.code.numbered .line {
+  position: relative;
+}
+
+.code .line:target,
+.code .line.lit {
+  background: var(--focus-glow);
+  box-shadow: inset 3px 0 0 var(--focus);
+}
+
+.code .line:target::before,
+.code .line.lit::before {
+  opacity: 1;
+  color: var(--focus);
+}
+
+/* A light highlight theme brings its own pale background with it, so the
+ * gutter and the frame move with it rather than staying dark against it. */
+.code.light {
+  border-color: rgba(0, 0, 0, 0.18);
+  color-scheme: light;
+}
+
+.code.light .line::before {
+  color: #2a1a20;
+  opacity: 0.4;
+}
+
+.code.light .line:target,
+.code.light .line.lit {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+@media (max-width: 640px) {
+  .paste-head {
+    flex-direction: column;
+  }
+
+  .code.numbered .line {
+    padding-left: 3.2rem;
+  }
+
+  .code.numbered .line::before {
+    width: 2.6rem;
+    padding-right: 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

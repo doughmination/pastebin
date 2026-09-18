@@ -1,0 +1,27 @@
+{
+  "name": "pastebin",
+  "version": "1.0.0",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "author": "Doughmination",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "hono": "^4.13.8",
+    "jose": "^6.2.12",
+    "jpml-lang": "^1.1.1",
+    "shiki": "^4.4.3"
+  },
+  "description": "Self-hosted pastebin for Doughmination: public to read, Doughmination SSO to write, with JPML syntax highlighting.",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "sync:jpml": "bun run scripts/sync-jpml-grammar.ts"
+  }
+}

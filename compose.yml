@@ -1,0 +1,23 @@
+# compose.yml
+# Copyright (c) 2026 Clove Nytrix Doughmination Twilight
+# Licensed under the DASL-1.2 Licence.
+# See LICENCE.md in the project root for full licence information.
+
+services:
+  pastebin:
+    build: .
+    restart: unless-stopped
+    # ORIGIN, OIDC_ISSUER and OIDC_CLIENT_ID are required; see .env.example.
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_FILE: /app/data/pastebin.db
+    ports:
+      # Behind a reverse proxy, bind loopback instead: "127.0.0.1:3000:3000"
+      - "3000:3000"
+    volumes:
+      - pastes:/app/data
+
+volumes:
+  pastes:
