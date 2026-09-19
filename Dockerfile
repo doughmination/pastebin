@@ -24,9 +24,9 @@ RUN mkdir -p /app/data && chown -R bun:bun /app/data
 VOLUME /app/data
 
 USER bun
-EXPOSE 3000
+EXPOSE 3030
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
-  CMD bun -e "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD bun -e "fetch('http://127.0.0.1:'+(process.env.PORT||3030)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["bun", "src/index.ts"]

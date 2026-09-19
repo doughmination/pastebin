@@ -11,11 +11,11 @@ services:
     env_file: .env
     environment:
       HOST: 0.0.0.0
-      PORT: 3000
+      PORT: 3030
       DATABASE_FILE: /app/data/pastebin.db
     ports:
       # Behind a reverse proxy, bind loopback instead: "127.0.0.1:3000:3000"
-      - "3000:3000"
+      - "3030:3030"
     volumes:
       - pastes:/app/data
 
