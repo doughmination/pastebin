@@ -1,27 +1,36 @@
 {
   "name": "pastebin",
-  "version": "1.0.0",
-  "module": "src/index.ts",
+  "version": "2.0.0",
   "type": "module",
   "private": true,
   "author": "Doughmination",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^7"
-  },
-  "dependencies": {
-    "hono": "^4.13.8",
-    "jose": "^6.2.12",
-    "jpml-lang": "^1.1.1",
-    "shiki": "^4.4.3"
-  },
   "description": "Self-hosted pastebin for Doughmination: public to read, Doughmination SSO to write, with JPML syntax highlighting.",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts",
-    "typecheck": "tsc --noEmit",
+    "dev": "bunx --bun vite dev",
+    "build": "bunx --bun vite build",
+    "start": "bun build/index.js",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "typecheck": "bun run check",
     "sync:jpml": "bun run scripts/sync-jpml-grammar.ts"
+  },
+  "imports": {
+    "#lib": "./src/lib/index.ts",
+    "#lib/*": "./src/lib/*"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^6.0.0",
+    "@sveltejs/kit": "^3.1.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/bun": "^1.4.4",
+    "svelte": "^5.57.3",
+    "svelte-check": "^4.7.7",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "iconsax": "^0.1.1",
+    "jose": "^6.2.12",
+    "shiki": "^4.4.3",
+    "simple-icons": "npm:@icons-pack/svelte-simple-icons@^7.2.0"
   }
 }

@@ -5,6 +5,8 @@ bun.lock
 # output
 out
 dist
+build
+.svelte-kit
 *.tgz
 
 # code coverage

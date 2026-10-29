@@ -5,3 +5,5 @@ data
 .github
 *.md
 !LICENCE.md
+build
+.svelte-kit
