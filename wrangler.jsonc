@@ -26,7 +26,7 @@
     {
       "binding": "DB",
       "database_name": "pastebin",
-      "database_id": "REPLACE_WITH_ID_FROM_wrangler_d1_create",
+      "database_id": "efef3c06-9f54-481d-81c5-34bcd8e0dfe9",
       "migrations_dir": "migrations"
     }
   ],
