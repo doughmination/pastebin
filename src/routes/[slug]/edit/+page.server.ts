@@ -17,8 +17,8 @@ import {
   valuesFrom,
 } from "#lib/server/compose.ts";
 
-export const load: PageServerLoad = (event) => {
-  const paste = ownPaste(event);
+export const load: PageServerLoad = async (event) => {
+  const paste = await ownPaste(event);
   return {
     slug: paste.slug,
     values: valuesFrom(paste),
@@ -28,7 +28,7 @@ export const load: PageServerLoad = (event) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const paste = ownPaste(event);
+    const paste = await ownPaste(event);
 
     const form = await event.request.formData();
     if (!csrfOk(event, form.get("_csrf"))) formExpired();
@@ -43,7 +43,7 @@ export const actions: Actions = {
       });
     }
 
-    updatePaste(paste.slug, {
+    await updatePaste(paste.slug, {
       title: cleanText(parsed.values.title, 200),
       body: parsed.values.body,
       language: parsed.values.language,

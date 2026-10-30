@@ -4,7 +4,8 @@
  * See LICENCE.md in the project root for full licence information.
  */
 
-import { createHighlighter, type Highlighter, type LanguageRegistration } from "shiki";
+import { createHighlighterCore, type HighlighterCore, type LanguageRegistration } from "shiki/core";
+import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { config } from "./env.ts";
 import { doughminationDark, doughminationLight } from "./themes.ts";
 import jpmlGrammar from "../../../syntaxes/jpml.tmLanguage.json" with { type: "json" };
@@ -12,8 +13,8 @@ import jpmlGrammar from "../../../syntaxes/jpml.tmLanguage.json" with { type: "j
 /**
  * The grammar file is copied verbatim from jpml-vscode so the two stay in
  * sync; only the registration metadata Shiki needs is added here. Its patterns
- * use Oniguruma inline flags, so this module keeps Shiki's default WASM engine
- * rather than the JavaScript RegExp one.
+ * use Oniguruma inline flags, so this module keeps Shiki's WASM engine rather
+ * than the JavaScript RegExp one.
  */
 const jpml = {
   ...(jpmlGrammar as unknown as LanguageRegistration),
@@ -136,17 +137,77 @@ export function themeIsLight(id: string): boolean {
   return THEMES.find((t) => t.id === id)?.light ?? false;
 }
 
-let highlighterPromise: Promise<Highlighter> | null = null;
+// Only the grammars on offer are bundled; Shiki's full set would blow the Worker size limit
+const GRAMMARS: Record<string, () => Promise<{ default: LanguageRegistration[] }>> = {
+  bash: () => import("@shikijs/langs/bash"),
+  c: () => import("@shikijs/langs/c"),
+  cpp: () => import("@shikijs/langs/cpp"),
+  csharp: () => import("@shikijs/langs/csharp"),
+  css: () => import("@shikijs/langs/css"),
+  diff: () => import("@shikijs/langs/diff"),
+  docker: () => import("@shikijs/langs/docker"),
+  elixir: () => import("@shikijs/langs/elixir"),
+  go: () => import("@shikijs/langs/go"),
+  haskell: () => import("@shikijs/langs/haskell"),
+  html: () => import("@shikijs/langs/html"),
+  ini: () => import("@shikijs/langs/ini"),
+  java: () => import("@shikijs/langs/java"),
+  javascript: () => import("@shikijs/langs/javascript"),
+  json: () => import("@shikijs/langs/json"),
+  kotlin: () => import("@shikijs/langs/kotlin"),
+  lua: () => import("@shikijs/langs/lua"),
+  markdown: () => import("@shikijs/langs/markdown"),
+  nix: () => import("@shikijs/langs/nix"),
+  php: () => import("@shikijs/langs/php"),
+  powershell: () => import("@shikijs/langs/powershell"),
+  python: () => import("@shikijs/langs/python"),
+  ruby: () => import("@shikijs/langs/ruby"),
+  rust: () => import("@shikijs/langs/rust"),
+  scss: () => import("@shikijs/langs/scss"),
+  sql: () => import("@shikijs/langs/sql"),
+  svelte: () => import("@shikijs/langs/svelte"),
+  swift: () => import("@shikijs/langs/swift"),
+  toml: () => import("@shikijs/langs/toml"),
+  tsx: () => import("@shikijs/langs/tsx"),
+  typescript: () => import("@shikijs/langs/typescript"),
+  vue: () => import("@shikijs/langs/vue"),
+  xml: () => import("@shikijs/langs/xml"),
+  yaml: () => import("@shikijs/langs/yaml"),
+  zig: () => import("@shikijs/langs/zig"),
+};
+
+// Workers refuse to compile WASM from bytes, so production imports the module
+// itself (wrangler bundles it); the Bun dev server is fine with Shiki's inlined copy
+async function onigWasm() {
+  if (import.meta.env.DEV) return import("shiki/wasm");
+
+  const { default: module } = await import("shiki/onig.wasm");
+  return (imports: WebAssembly.Imports | undefined) => WebAssembly.instantiate(module, imports);
+}
+
+let highlighterPromise: Promise<HighlighterCore> | null = null;
 
 /**
- * One highlighter for the process. Themes load up front (there are ten and
- * they are small); grammars load the first time a paste asks for them, so
- * start-up doesn't pay for languages nobody has used.
+ * One highlighter per isolate. Themes load up front (there are ten and they
+ * are small); grammars load the first time a paste asks for them, so start-up
+ * doesn't pay for languages nobody has used.
  */
-function highlighter(): Promise<Highlighter> {
-  highlighterPromise ??= createHighlighter({
-    themes: [doughminationDark, doughminationLight, ...THEMES.map((t) => t.id).filter((id) => !id.startsWith("doughmination"))],
+function highlighter(): Promise<HighlighterCore> {
+  highlighterPromise ??= createHighlighterCore({
+    themes: [
+      doughminationDark,
+      doughminationLight,
+      import("@shikijs/themes/catppuccin-mocha"),
+      import("@shikijs/themes/dracula"),
+      import("@shikijs/themes/github-dark"),
+      import("@shikijs/themes/nord"),
+      import("@shikijs/themes/tokyo-night"),
+      import("@shikijs/themes/vitesse-dark"),
+      import("@shikijs/themes/github-light"),
+      import("@shikijs/themes/vitesse-light"),
+    ],
     langs: [jpml],
+    engine: createOnigurumaEngine(onigWasm()),
   });
   return highlighterPromise;
 }
@@ -154,15 +215,19 @@ function highlighter(): Promise<Highlighter> {
 /** Loads the grammars used most, so the first paste view isn't the one that waits. */
 export async function warmUp(): Promise<void> {
   const shiki = await highlighter();
-  await shiki.loadLanguage("json", "javascript", "typescript", "python", "bash", "markdown");
+  await Promise.all(
+    ["json", "javascript", "typescript", "python", "bash", "markdown"].map((id) => ensureLanguage(shiki, id)),
+  );
 }
 
 const loaded = new Set<string>(["jpml", "text"]);
 
-async function ensureLanguage(shiki: Highlighter, language: string): Promise<boolean> {
+async function ensureLanguage(shiki: HighlighterCore, language: string): Promise<boolean> {
   if (loaded.has(language)) return true;
+  const grammar = GRAMMARS[language];
+  if (!grammar) return false;
   try {
-    await shiki.loadLanguage(language as Parameters<Highlighter["loadLanguage"]>[0]);
+    await shiki.loadLanguage((await grammar()).default);
     loaded.add(language);
     return true;
   } catch (err) {

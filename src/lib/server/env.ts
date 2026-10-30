@@ -5,21 +5,26 @@
  */
 
 import { building } from "$app/env";
+import { env } from "cloudflare:workers";
+
+// Vars and secrets from wrangler.jsonc, or .dev.vars locally. The build has no
+// bindings, and touching them there throws
+const vars: Record<string, string | undefined> = building ? {} : (env as unknown as Record<string, string>);
 
 function required(name: string): string {
-  const value = process.env[name]?.trim();
+  const value = vars[name]?.trim();
   if (!value) {
-    throw new Error(`${name} is not set. Copy .env.example to .env and fill it in.`);
+    throw new Error(`${name} is not set. Set it in wrangler.jsonc, or .dev.vars locally.`);
   }
   return value;
 }
 
 function optional(name: string, fallback: string): string {
-  return process.env[name]?.trim() || fallback;
+  return vars[name]?.trim() || fallback;
 }
 
 function integer(name: string, fallback: number): number {
-  const raw = process.env[name]?.trim();
+  const raw = vars[name]?.trim();
   if (!raw) return fallback;
   const value = Number(raw);
   if (!Number.isFinite(value) || value <= 0) throw new Error(`${name} must be a positive number.`);
@@ -30,9 +35,6 @@ export interface Config {
   /** Public origin of this pastebin, e.g. https://paste.doughmination.gay. */
   origin: string;
   siteName: string;
-  port: number;
-  host: string;
-  databaseFile: string;
   /** OIDC issuer: the auth-server's public origin. */
   issuer: string;
   clientId: string;
@@ -46,15 +48,12 @@ export interface Config {
 
 // The build imports server modules to analyse them, with no .env around
 const read = building
-  ? (name: string) => process.env[name]?.trim() || "http://localhost"
+  ? (name: string) => vars[name]?.trim() || "http://localhost"
   : required;
 
 export const config: Config = {
   origin: read("ORIGIN").replace(/\/+$/, ""),
   siteName: optional("SITE_NAME", "Doughmination Paste"),
-  port: integer("PORT", 3000),
-  host: optional("HOST", "0.0.0.0"),
-  databaseFile: optional("DATABASE_FILE", "data/pastebin.db"),
   issuer: read("OIDC_ISSUER").replace(/\/+$/, ""),
   clientId: read("OIDC_CLIENT_ID"),
   clientSecret: optional("OIDC_CLIENT_SECRET", ""),

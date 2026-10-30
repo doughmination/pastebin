@@ -18,7 +18,7 @@ import {
 } from "#lib/server/highlight.ts";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-  const paste = getPaste(params.slug);
+  const paste = await getPaste(params.slug);
   if (!paste) {
     error(404, {
       title: "No such paste",
@@ -57,12 +57,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions: Actions = {
   delete: async (event) => {
-    const paste = ownPaste(event);
+    const paste = await ownPaste(event);
 
     const form = await event.request.formData();
     if (!csrfOk(event, form.get("_csrf"))) formExpired();
 
-    deletePaste(paste.slug);
+    await deletePaste(paste.slug);
     redirect(303, "/mine?m=paste-deleted");
   },
 };

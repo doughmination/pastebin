@@ -4,6 +4,7 @@
  * See LICENCE.md in the project root for full licence information.
  */
 
+import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle, HandleServerError, ServerInit } from "@sveltejs/kit/hooks";
 import { config, isSecure } from "#lib/server/env.ts";
 import { sweepExpired } from "#lib/server/db.ts";
@@ -12,12 +13,21 @@ import { warmUp } from "#lib/server/highlight.ts";
 
 const ORIGIN = new URL(config.origin).origin;
 
-export const init: ServerInit = () => {
-  // Expired pastes are already invisible to every query; this is what actually
-  // reclaims the space, alongside spent sessions and abandoned sign-ins.
-  sweepExpired();
-  setInterval(sweepExpired, 60 * 60 * 1000).unref();
+const SWEEP_EVERY = 60 * 60 * 1000;
+let lastSweep = 0;
 
+// Expired pastes are already invisible to every query; this is what actually
+// reclaims the space, alongside spent sessions and abandoned sign-ins. A Worker
+// has no timers between requests, so a request past the hour pays for it.
+function maybeSweep(event: RequestEvent): void {
+  if (Date.now() - lastSweep < SWEEP_EVERY) return;
+  lastSweep = Date.now();
+
+  const sweep = sweepExpired().catch((err) => console.error("[sweep] failed:", err));
+  event.platform?.ctx.waitUntil(sweep);
+}
+
+export const init: ServerInit = () => {
   // Pull in the most-used grammars now so the first paste view isn't the
   // request that pays for them.
   warmUp().catch((err) => console.error("[highlight] warm-up failed:", err));
@@ -44,6 +54,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     return new Response("Cross-site request refused.", { status: 403 });
   }
 
+  maybeSweep(event);
   await loadSession(event);
   const response = await resolve(event);
 

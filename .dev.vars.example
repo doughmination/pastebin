@@ -1,31 +1,19 @@
-# Copy to .env and fill in. Everything without a default is required.
+# .dev.vars.example
+# Copy to .dev.vars for `bun run dev` / `wrangler dev`. In production these
+# come from wrangler.jsonc "vars", and OIDC_CLIENT_SECRET from
+# `wrangler secret put OIDC_CLIENT_SECRET`.
 
 # Public origin of this pastebin. It is what paste links look like and what the
 # redirect URI is built from, so it must match what the auth server has
 # registered for this client.
-ORIGIN=https://pastes.doughmination.gay
+ORIGIN=http://localhost:5173
 
-# Shown in the header and page titles.
 SITE_NAME=Doughmination Paste
 
-# Where Bun listens. Behind a reverse proxy, bind loopback: HOST=127.0.0.1
-PORT=3030
-HOST=0.0.0.0
-
-# SvelteKit works out each request's origin from the Host header and assumes
-# https. The reverse proxy must pass Host through. Serving plain http locally?
-# Set PROTOCOL_HEADER=x-forwarded-proto and have the proxy send it.
-# PROTOCOL_HEADER=x-forwarded-proto
-
-# SQLite file. Its directory is created at start-up.
-DATABASE_FILE=data/pastebin.db
-
 # --- Doughmination SSO ---------------------------------------------------------
-# The auth-server's public origin: its OIDC issuer.
-OIDC_ISSUER=https://auth.doughmination.gay
-
 # Register this pastebin at the auth server's /admin -> Applications, with
 # redirect URI  <ORIGIN>/auth/callback  and post-logout redirect  <ORIGIN>/
+OIDC_ISSUER=https://auth.doughmination.gay
 OIDC_CLIENT_ID=pastebin
 
 # Leave empty for a public client (PKCE only). Set it for a confidential one.
@@ -36,5 +24,5 @@ OIDC_CLIENT_SECRET=
 MAX_BODY_BYTES=524288
 
 # Pastes larger than this are shown as plain text: tokenizing megabytes of code
-# stalls the server for everyone else.
+# stalls the Worker's CPU budget.
 MAX_HIGHLIGHT_BYTES=196608

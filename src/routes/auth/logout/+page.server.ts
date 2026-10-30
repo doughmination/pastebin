@@ -19,7 +19,7 @@ export const actions: Actions = {
     const form = await event.request.formData();
     if (!csrfOk(event, form.get("_csrf"))) formExpired();
 
-    endCurrentSession(event);
+    await endCurrentSession(event);
 
     // Ending the session here leaves the auth server's own session alone, so
     // only close that too when asked

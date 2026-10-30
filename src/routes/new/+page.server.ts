@@ -41,7 +41,7 @@ export const actions: Actions = {
     const form = await event.request.formData();
     if (!csrfOk(event, form.get("_csrf"))) formExpired();
 
-    if (countRecentByAuthor(user.id, now() - 3600) >= HOURLY_LIMIT) {
+    if ((await countRecentByAuthor(user.id, now() - 3600)) >= HOURLY_LIMIT) {
       error(429, {
         title: "Slow down",
         message: `That's ${HOURLY_LIMIT} pastes in an hour. Try again later.`,
@@ -62,9 +62,9 @@ export const actions: Actions = {
       slug = parsed.values.slug;
       const fault = slugProblem(slug);
       if (fault) return reject(fault);
-      if (slugTaken(slug)) return reject(`The slug "${slug}" is already taken.`);
+      if (await slugTaken(slug)) return reject(`The slug "${slug}" is already taken.`);
     } else {
-      const generated = freeSlug();
+      const generated = await freeSlug();
       if (!generated) {
         error(503, {
           title: "Couldn't allocate an address",
@@ -74,7 +74,7 @@ export const actions: Actions = {
       slug = generated;
     }
 
-    createPaste({
+    await createPaste({
       slug,
       authorId: user.id,
       title: cleanText(parsed.values.title, 200),

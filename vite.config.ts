@@ -4,7 +4,7 @@
  * See LICENCE.md in the project root for full licence information.
  */
 
-import adapter from "@sveltejs/adapter-node";
+import adapter from "@sveltejs/adapter-cloudflare";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
@@ -44,12 +44,10 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["iconsax"],
   },
-  ssr: {
-    external: ["bun:sqlite"],
-  },
+  // Left for wrangler to bundle as a compiled WASM module; see highlight.ts
   build: {
     rollupOptions: {
-      external: ["bun:sqlite"],
+      external: ["shiki/onig.wasm"],
     },
   },
 });

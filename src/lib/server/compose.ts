@@ -161,18 +161,18 @@ export function parseComposer(form: FormData): Parsed {
 }
 
 /** Generated slugs collide vanishingly rarely; a few tries removes the doubt. */
-export function freeSlug(): string | null {
+export async function freeSlug(): Promise<string | null> {
   for (let attempt = 0; attempt < 8; attempt++) {
     const slug = randomSlug(attempt < 5 ? 8 : 12);
-    if (!slugTaken(slug)) return slug;
+    if (!(await slugTaken(slug))) return slug;
   }
   return null;
 }
 
 /** Resolves a paste the signed-in account is allowed to change, or throws the right error page. */
-export function ownPaste(event: RequestEvent): PasteWithAuthor {
+export async function ownPaste(event: RequestEvent): Promise<PasteWithAuthor> {
   const user = event.locals.user;
-  const paste = getPaste(event.params.slug ?? "");
+  const paste = await getPaste(event.params.slug ?? "");
 
   if (!paste) {
     error(404, {

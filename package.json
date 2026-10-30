@@ -4,30 +4,36 @@
   "type": "module",
   "private": true,
   "author": "Doughmination",
-  "description": "Self-hosted pastebin for Doughmination: public to read, Doughmination SSO to write, with JPML syntax highlighting.",
+  "description": "Pastebin on Cloudflare Workers + D1 for Doughmination: public to read, Doughmination SSO to write, with JPML syntax highlighting.",
   "scripts": {
     "dev": "bunx --bun vite dev",
     "build": "bunx --bun vite build",
-    "start": "bun build/index.js",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "typecheck": "bun run check",
-    "sync:jpml": "bun run scripts/sync-jpml-grammar.ts"
+    "sync:jpml": "bun run scripts/sync-jpml-grammar.ts",
+    "preview": "bun run build && wrangler dev",
+    "deploy": "bun run build && wrangler d1 migrations apply pastebin --remote && wrangler deploy",
+    "types": "wrangler types"
   },
   "imports": {
     "#lib": "./src/lib/index.ts",
     "#lib/*": "./src/lib/*"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^6.0.0",
+    "@cloudflare/workers-types": "^5.20261028.1",
+    "@sveltejs/adapter-cloudflare": "8.0.1",
     "@sveltejs/kit": "^3.1.0",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@types/bun": "^1.4.4",
     "svelte": "^5.57.3",
     "svelte-check": "^4.7.7",
     "typescript": "^6.0.3",
-    "vite": "^8.3.5"
+    "vite": "^8.3.5",
+    "wrangler": "4.154.0"
   },
   "dependencies": {
+    "@shikijs/langs": "4.5.0",
+    "@shikijs/themes": "4.5.0",
     "iconsax": "^0.1.1",
     "jose": "^6.2.12",
     "shiki": "^4.4.3",

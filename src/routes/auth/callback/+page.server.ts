@@ -33,7 +33,7 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
     });
   }
 
-  const login = takeLogin(await sha256Hex(state));
+  const login = await takeLogin(await sha256Hex(state));
   if (!login) {
     error(400, {
       title: "That sign-in expired",
@@ -52,7 +52,7 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
     });
   }
 
-  upsertUser(identity);
+  await upsertUser(identity);
   await startSession(cookies, identity.id);
 
   const separator = login.return_to.includes("?") ? "&" : "?";

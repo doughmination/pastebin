@@ -1,0 +1,47 @@
+// wrangler.jsonc
+// Copyright (c) 2026 Clove Nytrix Doughmination Twilight
+// Licensed under the DASL-1.2 Licence.
+// See LICENCE.md in the project root for full licence information.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pastebin",
+  "main": ".svelte-kit/cloudflare/_worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".svelte-kit/cloudflare"
+  },
+
+  "routes": [
+    {
+      "pattern": "pastes.doughmination.gay",
+      "custom_domain": true
+    }
+  ],
+
+  // Users, sessions, in-flight sign-ins and pastes
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pastebin",
+      "database_id": "REPLACE_WITH_ID_FROM_wrangler_d1_create",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Secrets (wrangler secret put): OIDC_CLIENT_SECRET, if the client is confidential
+  "vars": {
+    "ORIGIN": "https://pastes.doughmination.gay",
+    "SITE_NAME": "Doughmination Paste",
+    "OIDC_ISSUER": "https://auth.doughmination.gay",
+    "OIDC_CLIENT_ID": "pastebin",
+    "MAX_BODY_BYTES": "524288",
+    "MAX_HIGHLIGHT_BYTES": "196608"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

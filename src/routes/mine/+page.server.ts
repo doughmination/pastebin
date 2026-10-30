@@ -9,15 +9,19 @@ import type { PageServerLoad } from "./$types";
 import { countPastesByAuthor, listPastesByAuthor } from "#lib/server/db.ts";
 import { PER_PAGE, pageNumber, toRow } from "#lib/server/listing.ts";
 
-export const load: PageServerLoad = ({ locals, url }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
   const user = locals.user;
   if (!user) redirect(303, "/auth/login?return_to=%2Fmine");
 
   const page = pageNumber(url);
+  const [total, pastes] = await Promise.all([
+    countPastesByAuthor(user.id),
+    listPastesByAuthor(user.id, PER_PAGE, (page - 1) * PER_PAGE),
+  ]);
   return {
     page,
-    total: countPastesByAuthor(user.id),
+    total,
     perPage: PER_PAGE,
-    pastes: listPastesByAuthor(user.id, PER_PAGE, (page - 1) * PER_PAGE).map(toRow),
+    pastes: pastes.map(toRow),
   };
 };

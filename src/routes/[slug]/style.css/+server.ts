@@ -12,7 +12,7 @@ import { renderPaste } from "#lib/server/highlight.ts";
 // A paste's own CSS: Shiki's token classes and its accent. Served as a file so
 // the page's CSP never has to allow inline styles
 export const GET: RequestHandler = async ({ params }) => {
-  const paste = getPaste(params.slug);
+  const paste = await getPaste(params.slug);
   if (!paste) return new Response("/* not found */", { status: 404 });
 
   const rendered = await renderPaste(paste);

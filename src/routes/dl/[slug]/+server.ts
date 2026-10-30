@@ -8,8 +8,8 @@ import type { RequestHandler } from "./$types";
 import { getPaste } from "#lib/server/db.ts";
 import { extensionFor } from "#lib/server/highlight.ts";
 
-export const GET: RequestHandler = ({ params }) => {
-  const paste = getPaste(params.slug);
+export const GET: RequestHandler = async ({ params }) => {
+  const paste = await getPaste(params.slug);
   if (!paste) return new Response("Not found", { status: 404 });
 
   const name = `${paste.slug}.${extensionFor(paste.language)}`.replace(/[^\w.-]/g, "_");

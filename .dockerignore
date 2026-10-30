@@ -1,9 +1,0 @@
-node_modules
-data
-.env
-.git
-.github
-*.md
-!LICENCE.md
-build
-.svelte-kit

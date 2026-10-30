@@ -18,7 +18,7 @@ const COOKIE = "paste_session";
 export async function startSession(cookies: Cookies, userId: string): Promise<void> {
   const token = randomToken(32);
   const expiresAt = now() + TTL.session;
-  createSession(await sha256Hex(token), userId, randomToken(16), expiresAt);
+  await createSession(await sha256Hex(token), userId, randomToken(16), expiresAt);
 
   cookies.set(COOKIE, token, {
     httpOnly: true,
@@ -29,9 +29,9 @@ export async function startSession(cookies: Cookies, userId: string): Promise<vo
   });
 }
 
-export function endCurrentSession(event: RequestEvent): void {
+export async function endCurrentSession(event: RequestEvent): Promise<void> {
   const session = event.locals.session;
-  if (session) deleteSession(session.idHash);
+  if (session) await deleteSession(session.idHash);
   event.cookies.delete(COOKIE, {
     path: "/",
     secure: isSecure(),
@@ -46,7 +46,7 @@ export async function loadSession(event: RequestEvent): Promise<void> {
   const token = event.cookies.get(COOKIE);
   if (!token) return;
 
-  const row = getSession(await sha256Hex(token));
+  const row = await getSession(await sha256Hex(token));
   if (!row) {
     event.cookies.delete(COOKIE, {
       path: "/",
@@ -55,9 +55,9 @@ export async function loadSession(event: RequestEvent): Promise<void> {
     return;
   }
 
-  const user = getUser(row.user_id);
+  const user = await getUser(row.user_id);
   if (!user) {
-    deleteSession(row.id_hash);
+    await deleteSession(row.id_hash);
     return;
   }
 

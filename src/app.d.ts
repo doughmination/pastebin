@@ -13,6 +13,14 @@ declare global {
       title?: string;
     }
 
+    // Filled by adapter-cloudflare; bindings themselves come from `cloudflare:workers`
+    interface Platform {
+      env: Env;
+      ctx: ExecutionContext;
+      caches: CacheStorage;
+      cf?: IncomingRequestCfProperties;
+    }
+
     interface Locals {
       session: SessionInfo | null;
       user: CurrentUser | null;

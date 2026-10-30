@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   const nonce = randomToken(24);
   const { verifier, challenge } = await pkce();
 
-  createLogin(await sha256Hex(state), verifier, nonce, returnTo, now() + TTL.pendingLogin);
+  await createLogin(await sha256Hex(state), verifier, nonce, returnTo, now() + TTL.pendingLogin);
 
   let target: string;
   try {
