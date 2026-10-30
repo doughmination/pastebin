@@ -9,6 +9,7 @@
   import { bytes, date, relative } from "#lib/format.ts";
   import Flash from "#lib/components/Flash.svelte";
   import CodeView from "#lib/components/CodeView.svelte";
+  import DiscordEmbed from "#lib/components/DiscordEmbed.svelte";
 
   let { data } = $props();
 
@@ -52,6 +53,11 @@
     <link rel="stylesheet" href="/{paste.slug}/style.css?v={paste.updatedAt}" />
   {/if}
 </svelte:head>
+
+<DiscordEmbed
+  {title}
+  description={`A paste by ${paste.authorUsername}.`}
+/>
 
 <div class="page">
   <Flash />

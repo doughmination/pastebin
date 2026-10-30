@@ -9,6 +9,7 @@
   import Flash from "#lib/components/Flash.svelte";
   import Pager from "#lib/components/Pager.svelte";
   import PasteRows from "#lib/components/PasteRows.svelte";
+  import DiscordEmbed from "#lib/components/DiscordEmbed.svelte";
 
   let { data } = $props();
 </script>
@@ -17,6 +18,11 @@
   <title>Recent pastes · {siteName}</title>
   <meta name="description" content="Public pastes on {siteName}." />
 </svelte:head>
+
+<DiscordEmbed
+  title="Recent pastes"
+  description="Public pastes on {siteName}."
+/>
 
 <div class="page">
   <div class="page-head">
